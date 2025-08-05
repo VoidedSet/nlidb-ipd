@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Querify Interface</title>
+    <link rel="stylesheet" href="styles/chat.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">Querify</div>
+    </header>
+    <div class="nav">
+        <img src="res/user.png" id="user-icon" width="30" alt="User">
+        <br>
+        <img src="res/save-chat.png" width="30" alt="Save Chat">
+    </div>
+    <main>
+
+        <div class="greet" id="greet">
+            <h1 class="greet"><b>
+                    Hello, <div class="gradient"> VoidedSet</div>
+            </h1>
+            </b>
+        </div>
+        <div class="options" id="options">
+            <div class="option">List all the students in the class.</div>
+            <div class="option">Add new user to admin table.</div>
+            <div class="option">What was this month's revenue?</div>
+            <div class="option">Purge all the outdated rows.</div>
+        </div>
+        <div class="chat-box" id="chat-box">
+            <!-- Chat messages will go here -->
+        </div>
+    </main>
+    <div class="chat-input" id="chat-input">
+        <input type="text" id="user-input" placeholder="your queries go here..">
+
+        <div class="icons">
+            <img class="img-btn" id="tts-btn" alt="" src="./res/Headphones_fill.svg" />
+            <img class="img-btn" id="speech-btn" alt="" src="./res/mic-fill.svg" />
+            <img class="img-btn" id="send-button" alt="" src="./res/voice-input.svg" />
+        </div>
+    </div>
+    <footer>
+        <p>Querify.</p>
+    </footer>
+
+    <!-- Dialog Box -->
+    <div class="overlay" id="dialog-overlay">
+        <div class="dialog-box">
+            <button class="close-button" onclick="closeDialog()">X</button>
+            <h1>Credentials</h1>
+
+            <div class="connect-db">
+                <form class="connect-db" id="connect-db">
+                    <input placeholder="Host" type="text" id="db-host" required />
+
+                    <input placeholder="Username" type="text" id="db-user" required />
+
+                    <input placeholder="Password" type="password" id="db-password" />
+
+                    <input placeholder="Database Name" type="text" id="db-name" required />
+
+                    <input placeholder="Groq API Key" type="password" id="groq-api-key" required />
+                    <br>
+                    <button type="submit">
+                        Confirm
+                    </button>
+
+                    <button type="button" onclick="logout()">Log Out</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="scripts/script.js"></script>
+    <script src="scripts/main.js"></script>
+    <!-- <script src="scripts/chat-profile.js"></script> -->
+</body>
+
+</html>
