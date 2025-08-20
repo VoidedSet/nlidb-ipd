@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoQuery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+    <main>
+        
+        <section id="video-section" class="section">
+            <video autoplay muted loop id="background-video">
+                <source src="resources/website.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+            <div id="intro-text">
+                <h1>InfoQuery</h1>
+                <h2 id="intro-text1">transcending beyond queries_</h2>
+                <a href="#signup"><button id="start">Get Started</button></a>
+            </div>
+        </section>
+
+        <section id="signup" class="section">
+            
+            
+            <div class="container">
+                <div class="signup-content" align="left">
+                    <h1 id="topic-title" align="center">Query Now!</h1>
+                    <p>
+                        Welcome to "InfoQuery" – where you can effortlessly interact with your database using plain English.
+                        Say goodbye to complex SQL queries and hello to a user-friendly interface that makes data analysis accessible for everyone.
+                        Start simplifying your database experience today!
+                    </p>
+                </div>
+                <div class="signup-form" id="signup-form">
+                <form>
+                      <h2>sign up now_</h2>
+                        <input
+                        placeholder="Email" type="email"
+                        id="email" required />
+        
+                        <input
+                        placeholder="Username" type="text"
+                        id="username" required />
+        
+                        <input
+                        placeholder="Password" type="password"
+                        id="password" required />
+
+                        <input
+                        placeholder="Groq API Key" type="password"
+                        id="groq-api-key" required />
+
+                    <button type="submit">
+                    Sign Up
+                    </button>
+                    <i>
+                    Already a user? <a id="login-link" href="#signup">Login.</a>
+                    </i>
+                  </form>
+                </div>
+                <div class="login-form" id = "login-form">
+                    <form>
+                          <h2>log in now_</h2>
+
+                            <!--L for login ha-->
+
+                            <input
+                              placeholder="Username" type="text"
+                              id="usernameL" required />
+            
+                            <input
+                              placeholder="Password" type="password"
+                              id="passwordL" required />
+                        <button type="submit">
+                        Log in
+                        </button>
+                        <i>
+                        Create an account. <a id="signup-link" href="#signup">Sign up.</a>
+                        </i>
+                      </form>
+                    </div>
+                    
+                <div class="connect-db" id = "connect-db">
+                    <form>
+                          <h2>connect database_</h2>
+                            <input
+                              placeholder="Host" type="text"
+                              id="db-host" required />
+            
+                            <input
+                              placeholder="Username" type="text"
+                              id="db-user" required />
+
+                            <input
+                            placeholder="Password" type="password"
+                            id="db-password"  />
+                            
+                            <input
+                            placeholder="Database Name" type="text"
+                            id="db-name" required />
+                        <button type="submit">
+                        Connect
+                        </button>
+                      </form>
+                    </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section">
+            <h1 id="topic-title">3 Steps to Go!</h1>
+            <div class="project-list">
+                <div class="project-item">
+                    <img src="res/groq1.png" height="225" id="project-img">
+                    <h3>Visit Groq Cloud & Sign Up</h3>
+                    <h3>Click here to redirect</h5>
+                    <div class="info-box">
+                    <img src="res/groq2.png" height="225" id="project-img">
+                    <h3>Go to api keys page and create an api.</h3>
+                    <h3>Copy the api and save it.</h3> 
+                    </div>
+                </div>
+                <div class="project-item">
+                    <img src="res/signup.png" height="225" id="project-img">
+                    <h3>Create an account over here</h3>
+                    <h3>Use the Groq api key copied earlier.</h3>
+                    <h3>Click to create!</h3>
+                    <div class="info-box">
+                    <img src="res/db.png" height="225" id="project-img">
+                    <h3>Once done with all the process,</h3>
+                    <h3>Connect to your MySql database.</h3>    
+                    </div>
+                </div>
+                <div class="project-item">
+                    <img src="res/chat1.png" id="project-img" height="225">
+                    <h1 style="color: limegreen; font-size: 50px;">You're Done.</h1>
+                    <div class="info-box">
+                    <img src="res/chat2.png" height="225" id="project-img">
+                    <h1>Ask your queries!</h1>  
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p align="center">InfoQuery</p>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="scripts/index.js"></script>
+    <script src="scripts/signup.js"></script>
+    <script src="scripts/login.js"></script>
+    <script src="scripts/db_credentials.js"></script>
+</body>
+</html>

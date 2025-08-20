@@ -1,0 +1,362 @@
+body, html{
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: "Raleway", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    color: white;
+    background: linear-gradient(180deg, rgb(0, 0, 0), rgb(40, 40, 40));   
+}
+
+::-webkit-scrollbar{
+    display: none;
+}
+
+.section {
+    padding: 60px 20px;
+    text-align: center;
+    font-weight: 1000;
+}
+
+#video-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 10;
+}
+
+#intro-text-backdrop {
+    z-index: 11; 
+    height: 849px;
+    width: 50%;
+}
+/*meh*/
+
+#intro-text {
+    z-index: 12;
+}
+
+#intro-text1{
+    font-size: 28px;
+    font-style: italic;
+    line-height: 0.1px;
+    font-weight: 1;
+    font-family: 'Courier New', Courier;
+}
+
+#intro-text h1 {
+    font-size: 100px;
+    margin: 0;
+}
+
+#start {
+    background-color: lime;
+    color: black;
+    margin-top: 20px;
+    margin-left: 340px;
+    font-weight: 600;
+    border: 2px solid black;
+    transition: all 0.2s;
+    
+    text-align: center;
+    width: 30%;
+    padding: 10px 10px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+
+#start:hover {
+    background: transparent;
+    border: 2px solid lime;
+    color: lime;
+}
+
+#topic-title{
+color: white;
+font-size: 80px;
+line-height: 0.1px;
+}
+
+.social-nav {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background: transparent;
+    border-radius: 10px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(21, 21, 21, 0.5);
+    padding: 5px 10px;
+}
+
+.social-nav img{
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.social-nav img:hover{
+    transform: scale(1.1);
+}
+
+.container {
+    max-width: 800px;
+    padding: 20px;
+    display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  box-sizing: border-box;
+  text-align: left;
+
+  width: 1319px;
+  flex-direction: row;
+  max-width: 100%;
+}
+
+.signup-content {
+    background-color: black;
+    padding: 30px;
+    border-radius: 8px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom: 3px solid lime;
+    margin-left: 100px;
+}
+
+.signup-content p {
+    color: rgb(202, 202, 202);
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.signup-form {
+    padding-left: 270px;
+    display: flex;
+}
+
+.signup-form form {
+    border-top-right-radius: 111px;
+    border-top-left-radius: 10px;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+    box-shadow: 0 0 8px black;
+    background-color: limegreen;
+    border: 5px solid black;
+}
+
+.signup-form input {
+    margin-bottom: 10px;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2.5px solid rgb(7, 7, 7);
+    padding: 10px 20px;
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+}
+
+.signup-form input::placeholder {
+    color: black;
+}
+
+.signup-form button {
+    
+    background-color: black;
+    color: white;
+    margin-top: 10px;
+    margin-left: 200px;
+    font-weight: 600;
+    border: 2px solid black;
+    transition: all 0.2s;
+    
+    width: 30%;
+    padding: 10px 10px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+.signup-form button:hover {
+    background: transparent;
+    transform: scale(1.1);
+}
+
+.login-form {
+    padding-left: 270px;
+    display: none;
+}
+
+.login-form form {
+    border-top-right-radius: 111px;
+    border-top-left-radius: 10px;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+    box-shadow: 0 0 8px black;
+    background-color: limegreen;
+    border: 5px solid black;
+}
+
+.login-form input {
+    margin-bottom: 10px;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2.5px solid rgb(7, 7, 7);
+    padding: 10px 20px;
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+}
+
+.login-form input::placeholder {
+    color: black;
+}
+
+.login-form button {
+    
+    background-color: rgb(46, 46, 46);
+    color: rgb(255, 255, 255);
+    margin-top: 10px;
+    margin-left: 200px;
+    font-weight: 600;
+    border: 2px solid black;
+    transition: all 0.2s;
+    
+    width: 30%;
+    padding: 10px 10px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+.login-form button:hover {
+    background: transparent;
+    transform: scale(1.1);
+}
+
+.connect-db {
+    padding-left: 270px;
+    display: none;
+}
+
+.connect-db form {
+    border-top-right-radius: 111px;
+    border-top-left-radius: 10px;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+    box-shadow: 0 0 8px black;
+    background-color: limegreen;
+    border: 5px solid black;
+}
+
+.connect-db input {
+    margin-bottom: 10px;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2.5px solid rgb(7, 7, 7);
+    padding: 10px 20px;
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+}
+
+.connect-db input::placeholder {
+    color: black;
+}
+
+.connect-db button {
+    
+    background-color: rgb(46, 46, 46);
+    color: rgb(255, 255, 255);
+    margin-top: 10px;
+    margin-left: 200px;
+    font-weight: 600;
+    border: 2px solid black;
+    transition: all 0.2s;
+    
+    width: 30%;
+    padding: 10px 10px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+.connect-db button:hover {
+    background: transparent;
+    transform: scale(1.1);
+}
+
+.project-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.project-item {
+    color:white;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 10px;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    height: 300px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s;
+    line-height: 0.5;
+}
+
+.project-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgb(49, 32, 49);
+}
+
+.info-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; 
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; 
+    transition: opacity 0.3s;
+    padding: 20px;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.project-item:hover .info-box {
+    opacity: 1;
+    background-color: black;
+    color: white;
+}
+
+#project-img {
+    box-shadow: 2px 2px 8px black;
+}
+
+footer {
+    border-top: 2px solid lime;
+    background-color: black;
+    height: 130px;
+    font-size: 25px;
+    font-family: Arial;
+    font-weight: 100;
+}
