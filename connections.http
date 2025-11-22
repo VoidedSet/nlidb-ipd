@@ -1,0 +1,12 @@
+POST http://client1.localhost:8000/api/connections/1/test
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYzNzk4MDgzLCJpYXQiOjE3NjM3OTc3ODMsImp0aSI6IjQ0MjRkYzRiOGUwODRkNDdiOWQzZDA3ZDMxNmNhNzgyIiwidXNlcl9pZCI6IjEifQ.blEuja4Qq9SpybU_E9HEKYt9vZl8DOWTwLGHPx1PiiQ
+Content-Type: application/json
+
+{
+    "name": "Test Client DB",
+    "db_type": "POSTGRES", 
+    "host": "localhost",
+    "port": 5432,
+    "username": "querify", 
+    "password": "doubleHeadedMonster" 
+}

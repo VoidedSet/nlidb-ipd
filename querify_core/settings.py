@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
-# Compatibility shim for packages that still import `force_text`
-# (Django 5 removed force_text in favor of force_str)
 try:
     import django.utils.encoding as _enc
     if not hasattr(_enc, "force_text"):
@@ -21,7 +19,6 @@ try:
 except Exception:
     pass
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -117,8 +114,6 @@ ALLOW_MULTITENANT_MIGRATIONS = True
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# querify_core/settings.py
-
 DATABASES = {
     "default": {
         "ENGINE": "django_tenants.postgresql_backend",
@@ -171,3 +166,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # Ensure JWTAuthentication is listed and correctly typed
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # Ensure IsAuthenticated is listed
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}

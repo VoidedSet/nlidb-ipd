@@ -1,4 +1,3 @@
-# connectivity/models.py
 from django.db import models
 
 from fernet_fields import fields
@@ -19,7 +18,8 @@ class DatabaseConnection(models.Model):
     host = models.CharField(max_length=255)
     port = models.IntegerField()
     username = models.CharField(max_length=100)
-    
+    db_name = models.CharField(max_length=100)
+        
     # SECURITY CRITICAL: The password must be stored encrypted
     password = fields.EncryptedCharField(max_length=255)
     

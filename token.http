@@ -1,0 +1,7 @@
+POST http://client1.localhost:8000/api/token/
+content-type: application/json
+
+{
+     "username": "client_admin",
+     "password": "client_strong_pass" 
+}

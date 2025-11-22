@@ -1,10 +1,8 @@
-# connectivity/db_utils.py
-
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from .models import DatabaseConnection
 import urllib.parse
-from sqlalchemy import inspect, text # Added text import for safe execution
+from sqlalchemy import inspect, text 
 
 def build_connection_url(connection_instance: DatabaseConnection) -> str:
     """Constructs the SQLAlchemy connection URL, handling password decryption and encoding."""
@@ -16,11 +14,11 @@ def build_connection_url(connection_instance: DatabaseConnection) -> str:
     
     if db_type == 'postgres':
         driver = 'postgresql'
-        db_name = connection_instance.username 
+        db_name = connection_instance.db_name 
     
     elif db_type == 'mysql':
         driver = 'mysql+pymysql'
-        db_name = connection_instance.username 
+        db_name = connection_instance.db_name
         
     else:
         raise ValueError(f"Unsupported database type: {connection_instance.db_type}")
@@ -34,7 +32,6 @@ def establish_connection(connection_instance: DatabaseConnection) -> Engine:
         db_url = build_connection_url(connection_instance)
         engine = create_engine(db_url, pool_recycle=3600)
         
-        # Test the connection
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             
