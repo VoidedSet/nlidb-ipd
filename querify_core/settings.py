@@ -12,6 +12,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
+# Compatibility shim for packages that still import `force_text`
+# (Django 5 removed force_text in favor of force_str)
+try:
+    import django.utils.encoding as _enc
+    if not hasattr(_enc, "force_text"):
+        _enc.force_text = getattr(_enc, "force_str")
+except Exception:
+    pass
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -78,7 +87,7 @@ SHARED_APPS = (
 
 TENANT_APPS = (
     'users', # Your custom user and RBAC models will go here
-    # 'connectivity', 
+    'connectivity', # App for managing data source connections
     # 'api', # Later apps for the BI features
 )
 
