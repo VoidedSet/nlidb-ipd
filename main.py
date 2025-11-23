@@ -29,7 +29,6 @@ def main():
 
     while True:
         try:
-            # 1. Get User Input
             user_input = input(Fore.GREEN + Style.BRIGHT + "You: " + Fore.RESET).strip()
             
             if user_input.lower() in ['exit', 'quit']:
@@ -39,12 +38,10 @@ def main():
             if not user_input:
                 continue
 
-            # 2. The Routing Layer
             print(Fore.MAGENTA + "   [Router] Analyzing request...")
             route_decision = route_query(user_input)
             print(Fore.MAGENTA + f"   [Router] Directed to: {route_decision}")
 
-            # 3. Execution Layer
             if route_decision == "SQL_QUERY":
                 response = sql_bot.run(user_input)
                 print(Fore.BLUE + f"\n[SQL Agent]: {response}\n")

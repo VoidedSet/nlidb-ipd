@@ -11,15 +11,13 @@ def get_llm(model_type="fast"):
     Returns the LLM instance.
     """
     if model_type == "fast":
-        # GEMINI 1.5 FLASH (High Rate Limits, Good Reasoning)
         return ChatGoogleGenerativeAI(
             temperature=0,
-            model="gemini-2.0-flash", # Or "gemini-2.0-flash-exp" if available
+            model="gemini-2.0-flash",
             google_api_key=os.getenv("GOOGLE_API_KEY"),
-            convert_system_message_to_human=True # LangChain quirk fix
+            convert_system_message_to_human=True 
         )
     elif model_type == "groq":
-        # Keep Groq for simple chat if needed
         return ChatGroq(
             temperature=0, 
             model_name="llama-3.3-70b-versatile",

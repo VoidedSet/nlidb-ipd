@@ -19,7 +19,6 @@ def chat_endpoint(request: QueryRequest):
     try:
         route = route_query(user_input)
     except:
-        # Fallback to EDA if router fails (or handle error)
         route = "EDA_TASK"
 
     if route == "SQL_QUERY":
@@ -27,7 +26,6 @@ def chat_endpoint(request: QueryRequest):
         return {"type": "sql", "answer": response}
 
     elif route == "EDA_TASK":
-        # EDA Agent returns full object
         result = eda_agent.run(user_input)
         return {
             "type": "eda",

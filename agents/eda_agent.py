@@ -9,7 +9,6 @@ from pydantic import BaseModel, Field
 from llm_setup import get_llm
 from db_connection import get_db
 
-# Define the Structure for the Plan
 class EDAPlan(BaseModel):
     thought_process: str = Field(description="Reasoning about the data and approach")
     code: str = Field(description="The executable Python code.")
@@ -51,7 +50,7 @@ class EDAAgent:
         # 2. HUMAN MESSAGE: The actual trigger
         prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
-            ("human", "Question: {question}") # Explicit Human Message
+            ("human", "Question: {question}")
         ])
         
         chain = prompt | self.llm | self.parser
