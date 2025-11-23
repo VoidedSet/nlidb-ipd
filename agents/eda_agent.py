@@ -1,22 +1,24 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import io
+import base64
+import json
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from pydantic import BaseModel, Field
-from langchain_experimental.utilities import PythonREPL
 from llm_setup import get_llm
 from db_connection import get_db
 
-# 1. Define the Structure we want strictly
+# Define the Structure for the Plan
 class EDAPlan(BaseModel):
     thought_process: str = Field(description="Reasoning about the data and approach")
-    expected_output_type: str = Field(description="The Python type of the result: float, str, dataframe, plot, ndarray")
-    code: str = Field(description="The executable Python code. Do not use markdown backticks inside this string.")
+    code: str = Field(description="The executable Python code.")
 
 class EDAAgent:
     def __init__(self):
         self.db = get_db()
+        # Ensure this uses the 'fast' or 'smart' model correctly configured in llm_setup.py
         self.llm = get_llm(model_type="fast") 
-        self.repl = PythonREPL()
         self.parser = JsonOutputParser(pydantic_object=EDAPlan)
 
     def get_schema(self):
@@ -26,98 +28,153 @@ class EDAAgent:
         schema = self.get_schema()
         format_instructions = self.parser.get_format_instructions()
         
+        # 1. SYSTEM MESSAGE: Context & Rules only
         system_prompt = """
-        You are a Senior Data Scientist. You have access to a MySQL database.
-        
-        DATABASE SCHEMA:
-        {schema}
-        
-        GOAL:
-        Write Python code to answer the user's question.
+        You are a Senior Data Scientist.
+        DATABASE SCHEMA: {schema}
         
         INSTRUCTIONS:
-        1. Look at the schema carefully. 
-        2. Inside the 'code' field:
-           - Use `import pandas as pd`
-           - Use `import numpy as np`
-           - Use `from sqlalchemy import create_engine`
-           - Connect: `engine = create_engine('mysql+mysqlconnector://root:@localhost:3306/prototype_testing')`
-           - Load data: `df = pd.read_sql("SELECT * FROM ...", engine)`
-           - Perform the analysis.
-           - Assign the final answer to variable `final_result`.
-        
-        DATA PERSISTENCE RULES (CRITICAL):
-        - If the user asks to PERMANENTLY CHANGE, REMOVE, or CLEAN data (e.g., "drop rows", "fill nulls"):
-          1. Perform the operation on the DataFrame (e.g., `df.dropna(inplace=True)`).
-          2. WRITE BACK to the database using:
-             `df.to_sql('table_name', engine, if_exists='replace', index=False)`
-          3. IMPORTANT: Use `if_exists='replace'` to overwrite the old table with the clean data.
-        
-        PYTHON BEST PRACTICES:
-        - Handling "NULL" strings vs NaN:
-          `df.replace('NULL', np.nan, inplace=True)` before dropping or filling.
+        1. Connect: `engine = create_engine('mysql+mysqlconnector://root:@localhost:3306/prototype_testing')`
+        2. Load data: `df = pd.read_sql("SELECT ...", engine)`
+        3. OUTPUTS:
+           - Assign the main result/dataframe to `final_result`.
+           - If generating a PLOT: 
+             1. Create the plot using matplotlib. 
+             2. Assign the figure to `final_plot` (e.g., `final_plot = plt.gcf()`).
         
         {format_instructions}
         """
         
         if retry_context:
-            system_prompt += f"\n\nPREVIOUS ATTEMPT FAILED. ERROR:\n{retry_context}\nReview the code and fix the syntax or logic."
+            system_prompt += f"\n\nPREVIOUS ERROR:\n{retry_context}\nFix the code."
 
+        # 2. HUMAN MESSAGE: The actual trigger
         prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
-            ("human", "{question}")
+            ("human", "Question: {question}") # Explicit Human Message
         ])
         
         chain = prompt | self.llm | self.parser
         
-        response = chain.invoke({
+        return chain.invoke({
             "schema": schema, 
-            "question": question,
-            "format_instructions": format_instructions 
+            "question": question, 
+            "format_instructions": format_instructions
         })
-        return response
+
+    def synthesize_answer(self, question, steps, final_result):
+        """
+        Consumes the logs and result to create the final "Gemini-style" text response.
+        """
+        result_summary = str(final_result)
+        if isinstance(final_result, pd.DataFrame):
+            result_summary = f"DataFrame with columns: {list(final_result.columns)}. Preview: {final_result.head().to_string()}"
+
+        # 1. SYSTEM: Persona
+        system_prompt = """
+        You are a Data Analyst acting as the interface for a BI tool.
+        Your task is to provide a clear, natural language conclusion based on the provided technical logs and results.
+        - Interpret the data/plot for the user.
+        - Do not show code (that is hidden elsewhere).
+        """
+        
+        # 2. HUMAN: The Data
+        human_message = """
+        USER QUESTION: {question}
+        
+        TECHNICAL EXECUTION LOGS:
+        {logs}
+        
+        FINAL RESULT/DATA:
+        {result}
+        """
+        
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", human_message)
+        ])
+        
+        chain = prompt | self.llm | StrOutputParser()
+        return chain.invoke({"question": question, "logs": str(steps), "result": result_summary})
+
     def run(self, question: str):
-        print(f"   [EDA Agent] Received: {question}")
-        
-        attempts = 0
+        steps = [] 
         max_retries = 3
-        previous_error = ""
         
-        while attempts < max_retries:
-            attempts += 1
-            print(f"   [EDA Agent] Thinking (Attempt {attempts})...")
+        for attempt in range(max_retries):
+            step_record = {
+                "attempt": attempt + 1,
+                "thought": "Planning logic...",
+                "code": "",
+                "error": None,
+                "output": None
+            }
             
             try:
-                # 1. Generate Plan
-                plan_data = self.generate_plan_and_code(question, previous_error)
-                print(f"   [EDA Agent] Plan: {plan_data['thought_process']}")
+                # 1. Plan
+                prev_err = steps[-1]['error'] if steps else ""
+                plan_data = self.generate_plan_and_code(question, prev_err)
                 
-                # 2. Extract Code
-                code = plan_data['code']
-                expected_type = plan_data['expected_output_type']
+                step_record["thought"] = plan_data['thought_process']
+                step_record["code"] = plan_data['code']
                 
-                print("   [EDA Agent] Executing Python...")
-                
-                # 3. Execute
+                # 2. Execute
                 local_scope = {}
-                exec(code, globals(), local_scope)
+                import sys
+                from io import StringIO
+                old_stdout = sys.stdout
+                redirected_output = sys.stdout = StringIO()
                 
-                # 4. Verification
+                try:
+                    exec(plan_data['code'], globals(), local_scope)
+                    sys.stdout = old_stdout 
+                    step_record["output"] = redirected_output.getvalue()
+                except Exception as exec_err:
+                    sys.stdout = old_stdout
+                    raise exec_err
+
+                # 3. Handle Results
                 if 'final_result' not in local_scope:
-                    raise ValueError("Code ran, but `final_result` variable was not defined.")
+                    raise ValueError("`final_result` variable missing.")
                 
                 actual_result = local_scope['final_result']
-                print(f"   [EDA Agent] Result Type: {type(actual_result)}")
                 
-                # 5. Type Check & Auto-Correction
-                if expected_type == "float" and isinstance(actual_result, pd.DataFrame):
-                    if not actual_result.empty:
-                        actual_result = actual_result.iloc[0,0]
+                # DataFrame to JSON for UI
+                dataframe_json = None
+                if isinstance(actual_result, pd.DataFrame):
+                    dataframe_json = actual_result.head(100).to_json(orient='records', date_format='iso')
                 
-                return f"Analysis Complete. Result: {actual_result}"
+                # 4. Handle Plots
+                plot_base64 = None
+                if 'final_plot' in local_scope:
+                    fig = local_scope['final_plot']
+                    buf = io.BytesIO()
+                    fig.savefig(buf, format="png", bbox_inches='tight')
+                    buf.seek(0)
+                    plot_base64 = base64.b64encode(buf.read()).decode("utf-8")
+                    plt.close(fig)
+
+                steps.append(step_record)
+                
+                # 5. Final Synthesis
+                natural_answer = self.synthesize_answer(question, steps, actual_result)
+                
+                return {
+                    "status": "success",
+                    "answer": natural_answer,
+                    "steps": steps,
+                    "image": plot_base64,
+                    "dataframe": dataframe_json 
+                }
 
             except Exception as e:
-                print(f"   [EDA Agent] Error: {e}")
-                previous_error = str(e)
+                step_record["error"] = str(e)
+                steps.append(step_record)
         
-        return "Failed to generate valid analysis after 3 attempts."
+        return {
+            "status": "failure",
+            "answer": "I failed to generate a valid analysis after multiple attempts.",
+            "steps": steps,
+            "image": None,
+            "dataframe": None
+        }
