@@ -10,6 +10,6 @@ agent = SQLAgent()
 #                      Jane in all three courses, Mary in Computer Networks only, Peter in Algorithms and Data Structures and
 #                      David in Data Structures only.''') 
 
-response = agent.run('''List the names of students with their courses.''')
+response = agent.run('''I first want you to give the count of entries in this table and then randomly populate a the studentsperformance table with 10 unclean half null entries. at the end i want you to give the count of entries again to make sure 10 new entries have been added.''')
 
 print("\nFINAL ANSWER:", response)

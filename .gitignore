@@ -1,6 +1,27 @@
 qenv
 .env
 
+agents/__pycache__/
 __pycache__/
 *.py[cod]
 *$py.class
+
+qenv/
+
+*.db
+*.sqlite3
+
+.ipynb_checkpoints/
+
+*.log
+tmp/
+
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+.DS_Store
+Thumbs.db
+
+__pypackages__/
