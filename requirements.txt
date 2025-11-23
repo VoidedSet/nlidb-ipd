@@ -1,0 +1,22 @@
+# Core AI
+langchain
+langchain-core
+langchain-community
+langchain-groq          # Primary (Speed)
+langchain-google-genai  # Secondary (Reasoning/Context)
+langchain-experimental  # For PythonREPL utility
+
+# Database
+psycopg2-binary
+mysql-connector-python 
+sqlalchemy
+
+# Data Analysis
+pandas
+matplotlib
+tabulate                # For pretty printing tables in CLI
+
+# Utilities
+python-dotenv
+pydantic
+colorama                # To make the CLI logs look cool/readable
