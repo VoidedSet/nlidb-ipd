@@ -3,7 +3,7 @@ from langchain_core.output_parsers import StrOutputParser
 from llm_setup import get_llm
 
 def route_query(question: str):
-    llm = get_llm(model_type="fast")
+    llm = get_llm(role="router")
     
     system_prompt = """
     You are an expert Data Router. You have access to a SQL Database.

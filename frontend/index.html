@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Querify 2.0 - Agentic BI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Querify</h1>
+                <p class="subtitle">Agentic BI</p>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="config-section">
+                    <h3>Data Source</h3>
+                    
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="source" value="mysql" checked>
+                            <span>MySQL Database</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="source" value="csv">
+                            <span>CSV Upload</span>
+                        </label>
+                    </div>
+
+                    <div id="mysql-config" class="config-option">
+                        <input 
+                            type="text" 
+                            id="db-name" 
+                            placeholder="Database name"
+                            class="input-field"
+                        >
+                        <input 
+                            type="text" 
+                            id="db-user" 
+                            placeholder="Username (default: root)"
+                            class="input-field"
+                            value="root"
+                        >
+                        <input 
+                            type="password" 
+                            id="db-pass" 
+                            placeholder="Password (leave empty if none)"
+                            class="input-field"
+                        >
+                        <button id="connect-db" class="btn btn-small">Connect</button>
+                        <div id="db-status" class="status-indicator"></div>
+                    </div>
+
+                    <div id="csv-config" class="config-option" style="display: none;">
+                        <input 
+                            type="file" 
+                            id="csv-file" 
+                            accept=".csv"
+                            class="file-input"
+                        >
+                        <button id="upload-csv" class="btn btn-small">Upload</button>
+                        <div id="csv-status" class="status-indicator"></div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="info-section">
+                    <h3>About</h3>
+                    <p>Querify is an intelligent BI tool that routes your questions to specialized AI agents for SQL queries and exploratory data analysis.</p>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="clear-history" class="btn btn-secondary">Clear History</button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <!-- Header -->
+            <header class="chat-header">
+                <div class="header-content">
+                    <h2>Chat with Your Data</h2>
+                    <p class="header-subtitle">Ask questions about your database</p>
+                </div>
+            </header>
+
+            <!-- Messages Area -->
+            <div class="messages-area" id="messagesArea">
+                <div class="welcome-message">
+                    <div class="welcome-icon">🧠</div>
+                    <h3>Welcome to Querify 2.0</h3>
+                    <p>Ask questions about your data. I'll analyze them using SQL queries or advanced data exploration.</p>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing your question...</p>
+            </div>
+
+            <!-- Input Area -->
+            <footer class="chat-footer">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        placeholder="Ask a question about your data..."
+                        class="message-input"
+                    >
+                    <button id="sendBtn" class="btn btn-primary">
+                        <span class="send-icon">→</span>
+                    </button>
+                </div>
+                <p class="input-hint">Press Enter or click the button to send</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal for viewing full images -->
+    <div id="imageModal" class="modal" style="display: none;">
+        <span class="close-modal">&times;</span>
+        <img id="modalImage" class="modal-content" alt="Visualization">
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,10 +1,20 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from agents.router import route_query
 from agents.sql_agent import SQLAgent
 from agents.eda_agent import EDAAgent
 
 app = FastAPI(title="Querify 2.0 API")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 sql_agent = SQLAgent()
 eda_agent = EDAAgent()

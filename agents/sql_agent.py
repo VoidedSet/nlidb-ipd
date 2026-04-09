@@ -6,8 +6,7 @@ from db_connection import get_db
 class SQLAgent:
     def __init__(self):
         self.db = get_db()
-        # Use the "fast" model (Groq/Llama3) for writing SQL
-        self.llm = get_llm(model_type="fast")
+        self.llm = get_llm(role="coder")
 
     def get_schema(self):
         return self.db.get_table_info()
