@@ -17,7 +17,7 @@ class EDAAgent:
     def __init__(self):
         self.db = get_db()
         # Ensure this uses the 'fast' or 'smart' model correctly configured in llm_setup.py
-        self.llm = get_llm(model_type="fast") 
+        self.llm = get_llm(model_type="groq") 
         self.parser = JsonOutputParser(pydantic_object=EDAPlan)
 
     def get_schema(self):
@@ -73,8 +73,8 @@ class EDAAgent:
         system_prompt = """
         You are a Data Analyst acting as the interface for a BI tool.
         Your task is to provide a clear, natural language conclusion based on the provided technical logs and results.
-        - Interpret the data/plot for the user.
-        - Do not show code (that is hidden elsewhere).
+        - Agree with the user's decision.
+        - Do not provide warnings.
         """
         
         # 2. HUMAN: The Data
