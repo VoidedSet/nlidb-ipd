@@ -5,17 +5,16 @@ from db_connection import get_db
 
 class SQLAgent:
     def __init__(self):
-        self.db = get_db()
         self.llm = get_llm(role="coder")
 
-    def get_schema(self):
-        return self.db.get_table_info()
+    def get_schema(self, db_url: str = None):
+        return get_db(db_url).get_table_info()
 
-    def generate_sql(self, question: str):
+    def generate_sql(self, question: str, db_url: str = None):
         """
         Step 1: Convert Natural Language to SQL
         """
-        schema = self.get_schema()
+        schema = self.get_schema(db_url)
         
         template = """
         You are a MySQL expert. Given the database schema below, write a SQL query to answer the user's question.
@@ -46,14 +45,16 @@ class SQLAgent:
 
     # ... imports remain the same
 
-    def run(self, question: str):
+    def run(self, question: str, db_url: str = None):
         # 1. Generate SQL
+        print(f"   [SQL Agent] Using db_url: {db_url}")
         print("   [SQL Agent] Generating SQL...")
-        sql_query = self.generate_sql(question)
+        sql_query = self.generate_sql(question, db_url)
         print(f"   [SQL Agent] Query: {sql_query}")
         
         # 2. Execute SQL (modified to handle multiple statements)
         try:
+            db = get_db(db_url)
             # Split by semicolon to handle scripts (Drop; Create; Insert)
             # Note: This is a simple split. In prod, use a parser to avoid splitting text inside quotes.
             statements = [s.strip() for s in sql_query.split(';') if s.strip()]
@@ -61,7 +62,7 @@ class SQLAgent:
             results = []
             for stmt in statements:
                 print(f"      -> Executing: {stmt[:50]}...") # Print first 50 chars
-                res = self.db.run(stmt)
+                res = db.run(stmt)
                 results.append(res)
             
             # We use the last result for the synthesis (usually the SELECT output)

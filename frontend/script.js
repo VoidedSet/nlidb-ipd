@@ -28,6 +28,7 @@ const csvStatus = document.getElementById('csv-status');
 // State
 let messageHistory = [];
 let isLoading = false;
+let currentCsvFile = null;  // Track current CSV file name
 
 // ===== INITIALIZATION =====
 
@@ -49,6 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     connectDbBtn.addEventListener('click', connectDatabase);
     uploadCsvBtn.addEventListener('click', uploadCSV);
+    
+    // Load any saved connection on page load
+    loadSavedConnection();
 
     // Modal
     closeModal.addEventListener('click', () => closeImageModal());
@@ -308,12 +312,27 @@ async function fetchChatResponse(userMessage) {
     loadingIndicator.style.display = 'flex';
 
     try {
+        const dbUrl = sessionStorage.getItem('dbUrl');
+        const payload = { text: userMessage };
+        
+        if (dbUrl) {
+            payload.db_url = dbUrl;
+            console.log('[Frontend] Sending with DB URL:', dbUrl);
+        } else {
+            console.log('[Frontend] No DB URL - using default/CSV');
+        }
+        
+        if (currentCsvFile) {
+            payload.csv_source = currentCsvFile;
+            console.log('[Frontend] Using CSV:', currentCsvFile);
+        }
+        
         const response = await fetch(`${API_BASE_URL}/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ text: userMessage }),
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
@@ -353,13 +372,41 @@ function handleSourceChange(e) {
     if (e.target.value === 'mysql') {
         mysqlConfig.style.display = 'flex';
         csvConfig.style.display = 'none';
+        currentCsvFile = null;  // Clear CSV source when switching to MySQL
     } else {
         mysqlConfig.style.display = 'none';
         csvConfig.style.display = 'flex';
+        sessionStorage.removeItem('dbUrl');  // Clear DB URL when switching to CSV
+    }
+}
+
+function loadSavedConnection() {
+    const saved = sessionStorage.getItem('dbUrl');
+    if (saved) {
+        updateStatus(dbStatus, 'Active connection found', 'connected');
+        connectDbBtn.innerHTML = '✓ Connected<br><small style="font-size:11px">Click to change</small>';
     }
 }
 
 function connectDatabase() {
+    // If already connected, allow to change
+    if (sessionStorage.getItem('dbUrl')) {
+        // Reset UI to allow new connection
+        dbNameInput.disabled = false;
+        dbUserInput.disabled = false;
+        dbPassInput.disabled = false;
+        connectDbBtn.textContent = 'Connect';
+        connectDbBtn.disabled = false;
+        dbNameInput.value = '';
+        dbUserInput.value = 'root';
+        dbPassInput.value = '';
+        sessionStorage.removeItem('dbUrl');
+        currentCsvFile = null;
+        updateStatus(dbStatus, 'Connection cleared - enter new credentials', 'error');
+        console.log('[DB] Connection reset');
+        return;
+    }
+    
     const dbName = dbNameInput.value.trim();
     const dbUser = dbUserInput.value.trim() || 'root';
     const dbPass = dbPassInput.value.trim();
@@ -374,15 +421,19 @@ function connectDatabase() {
         ? `mysql+mysqlconnector://${dbUser}:${dbPass}@localhost:3306/${dbName}`
         : `mysql+mysqlconnector://${dbUser}@localhost:3306/${dbName}`;
 
-    // Store in session (could be sent to backend if needed)
+    console.log('[Frontend] DB Connection Attempt:', dbName, 'User:', dbUser);
+    console.log('[Frontend] DB URL:', dbUrl);
+    
+    // Store in session
     sessionStorage.setItem('dbUrl', dbUrl);
+    currentCsvFile = null;  // Clear CSV when connecting to DB
 
-    updateStatus(dbStatus, `Connected to "${dbName}"`, 'connected');
+    updateStatus(dbStatus, `✓ Connected to "${dbName}"`, 'connected');
     dbNameInput.disabled = true;
     dbUserInput.disabled = true;
     dbPassInput.disabled = true;
-    connectDbBtn.textContent = '✓ Connected';
-    connectDbBtn.disabled = true;
+    connectDbBtn.innerHTML = '✓ Connected<br><small style="font-size:11px">Click to change</small>';
+    connectDbBtn.disabled = false;  // Allow clicking to change
 }
 
 function uploadCSV() {
@@ -392,10 +443,27 @@ function uploadCSV() {
         return;
     }
 
-    // For demo, just show confirmation
-    updateStatus(csvStatus, `Configured: ${file.name}`, 'connected');
-    uploadCsvBtn.textContent = 'Uploaded';
-    uploadCsvBtn.disabled = true;
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch(`${API_BASE_URL}/upload-csv`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            currentCsvFile = data.filename;
+            updateStatus(csvStatus, `✓ Uploaded: ${data.filename} (${data.rows} rows)`, 'connected');
+            uploadCsvBtn.textContent = '✓ Uploaded';
+            uploadCsvBtn.disabled = true;
+        } else {
+            updateStatus(csvStatus, `Error: ${data.message}`, 'error');
+        }
+    })
+    .catch(error => {
+        updateStatus(csvStatus, `Upload failed: ${error.message}`, 'error');
+    });
 }
 
 function updateStatus(element, message, status) {
