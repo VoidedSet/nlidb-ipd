@@ -4,16 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def get_db():
-    """
-    Establishes a connection to the MySQL database using SQLAlchemy
-    and returns a LangChain SQLDatabase wrapper.
-    """
-    db_uri = os.getenv("DATABASE_URL")
+def get_db(uri=None):
+    db_uri = uri or os.getenv("DATABASE_URL")
     if not db_uri:
-        raise ValueError("DATABASE_URL not found in .env")
-        
-    return SQLDatabase.from_uri(db_uri, sample_rows_in_table_info=0)
+        raise ValueError("No database source provided.")
+    return SQLDatabase.from_uri(db_uri)
 
 if __name__ == "__main__":
     try:

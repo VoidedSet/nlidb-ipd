@@ -1,27 +1,36 @@
-# llm_setup.py
 import os
 from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
-from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
 
-def get_llm(model_type="fast"):
-    """
-    Returns the LLM instance.
-    """
-    if model_type == "fast":
-        return ChatGoogleGenerativeAI(
-            temperature=0,
-            model="gemini-2.0-flash",
-            google_api_key=os.getenv("GOOGLE_API_KEY"),
-            convert_system_message_to_human=True 
+def get_llm(role="router"):
+    if role == "planner":
+        # DeepSeek on Featherless for 1-shot reasoning/planning
+        return ChatOpenAI(
+            model="deepseek-ai/DeepSeek-V3-0324", 
+            api_key=os.getenv("FEATHERLESS_API_KEY"),
+            base_url="https://api.featherless.ai/v1",
+            temperature=0.2
         )
-    elif model_type == "groq":
+    elif role == "coder":
+        # Qwen 3 32B on Groq for rapid, iterative code execution
         return ChatGroq(
-            temperature=0, 
-            model_name="llama-3.3-70b-versatile",
-            api_key=os.getenv("GROQ_API_KEY")
+            # model="qwen/qwen3-32b", # You can also swap this to "llama-3.3-70b-versatile"
+            model="llama-3.3-70b-versatile", # You can also swap this to ""
+            api_key=os.getenv("GROQ_API_KEY"),
+            temperature=0
         )
+
+        # return ChatOpenAI(
+        #     model="Qwen/Qwen2.5-Coder-32B-Instruct", 
+        #     api_key=os.getenv("FEATHERLESS_API_KEY"),
+        #     base_url="https://api.featherless.ai/v1",
+        #     temperature=0.49
+        # )
+    
+    elif role == "router":
+        return ChatGroq(model="llama-3.1-8b-instant", temperature=0)
     else:
-        raise ValueError("Unknown model type")
+        raise ValueError("Unknown agent role")

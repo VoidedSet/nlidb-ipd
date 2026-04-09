@@ -8,7 +8,6 @@ import json
 st.set_page_config(
     page_title="Querify 2.0",
     page_icon="🧠",
-    layout="wide" # Wide layout for better "Notebook" feel
 )
 
 # Custom CSS for Minimalist Design
@@ -127,3 +126,19 @@ if prompt := st.chat_input("Ask a question about your data..."):
             
             except Exception as e:
                 st.error(f"Connection Failed: {e}")
+
+# Sidebar for Data Source Configuration
+with st.sidebar:
+    st.header("Data Configuration")
+    source_type = st.radio("Select Data Source:", ["MySQL Database", "CSV Upload"])
+
+    if source_type == "MySQL Database":
+        db_url = st.text_input("Database URL", placeholder="mysql+pymysql://user:pass@host/db")
+        if db_url:
+            # Update session state or send to backend
+            st.session_state['db_url'] = db_url
+    else:
+        uploaded_file = st.file_uploader("Upload your CSV", type=["csv"])
+        if uploaded_file:
+            # Logic to save file or pass data to backend
+            st.session_state['data_file'] = uploaded_file

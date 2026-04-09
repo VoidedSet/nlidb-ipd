@@ -5,6 +5,7 @@ langchain-community
 langchain-groq          # Primary (Speed)
 langchain-google-genai  # Secondary (Reasoning/Context)
 langchain-experimental  # For PythonREPL utility
+langchain-openai
 
 # Database
 psycopg2-binary
