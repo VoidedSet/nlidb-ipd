@@ -1,38 +1,36 @@
 # llm_setup.py
 import os
 from dotenv import load_dotenv
-from langchain_groq import ChatGroq
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
 def get_llm(model_type="fast"):
     """
-    Returns the LLM instance.
+    Returns the LLM instance connected to Featherless AI.
     """
+    # Featherless uses an OpenAI-compatible endpoint
+    featherless_base_url = "https://api.featherless.ai/v1"
+    api_key = os.getenv("FEATHERLESS_API_KEY")
+
+    if not api_key:
+        raise ValueError("FEATHERLESS_API_KEY is missing from the environment variables.")
+
     if model_type == "fast":
-        return ChatGroq(
+        return ChatOpenAI(
             temperature=0, 
-            model_name="llama-3.1-8b-instant",
-            api_key=os.getenv("GROQ_API_KEY")
+            # Replace with the exact DeepSeek model ID available on your Featherless plan
+            model="deepseek-ai/DeepSeek-V3-0324", 
+            api_key=api_key,
+            base_url=featherless_base_url
         )
-        # return ChatGoogleGenerativeAI(
-        #     temperature=0,
-        #     model="gemini-2.0-flash",
-        #     google_api_key=os.getenv("GOOGLE_API_KEY"),
-        #     convert_system_message_to_human=True 
-        # )
-    elif model_type == "groq":
-        return ChatGroq(
+    elif model_type == "groq" or model_type == "smart":
+        return ChatOpenAI(
             temperature=0, 
-            model_name="llama-3.3-70b-versatile",
-            api_key=os.getenv("GROQ_API_KEY")
+            # You can use a heavier model here for the EDA agent
+            model="deepseek-ai/DeepSeek-Coder-V2-Instruct", 
+            api_key=api_key,
+            base_url=featherless_base_url
         )
-        # return ChatGoogleGenerativeAI(
-        #     temperature=0,
-        #     model="gemini-2.0-flash",
-        #     google_api_key=os.getenv("GOOGLE_API_KEY"),
-        #     convert_system_message_to_human=True 
-        # )
     else:
         raise ValueError("Unknown model type")

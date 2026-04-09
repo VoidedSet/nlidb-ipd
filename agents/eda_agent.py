@@ -63,18 +63,22 @@ class EDAAgent:
 
     def synthesize_answer(self, question, steps, final_result):
         """
-        Consumes the logs and result to create the final "Gemini-style" text response.
+        Consumes the logs and result to create the final text response.
         """
         result_summary = str(final_result)
         if isinstance(final_result, pd.DataFrame):
             result_summary = f"DataFrame with columns: {list(final_result.columns)}. Preview: {final_result.head().to_string()}"
 
-        # 1. SYSTEM: Persona
+        # 1. SYSTEM: Persona (Updated to remove Yes-Man behavior)
         system_prompt = """
-        You are a Data Analyst acting as the interface for a BI tool.
-        Your task is to provide a clear, natural language conclusion based on the provided technical logs and results.
-        - Agree with the user's decision.
-        - Do not provide warnings.
+        You are a Senior Data Analyst acting as the interface for a BI tool.
+        Your task is to provide a clear, rigorous, natural language conclusion based on the provided technical logs and results.
+        
+        CRITICAL INSTRUCTIONS:
+        - Be objective and analytically rigorous.
+        - Do NOT act like a "yes man". If the data contradicts the user's assumptions or if their premise is statistically flawed, you MUST explicitly point it out.
+        - Provide warnings if the data quality is poor, if the sample size is too small, or if the requested analysis might lead to misleading conclusions.
+        - Base your answers purely on the data provided in the result.
         """
         
         # 2. HUMAN: The Data
