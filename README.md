@@ -1,272 +1,129 @@
 # Querify
 
-> An LLM-driven Business Intelligence engine with NL2SQL, iterative EDA, sandboxed Python execution, multilingual querying, and sentiment-aware decision support.
+An LLM-driven BI prototype that routes natural-language questions to either SQL or exploratory data analysis (EDA), then returns a concise narrative, tables, and charts.
 
-## Overview
+## What It Does
 
-Querify is an intelligent business intelligence platform that allows users to interact with structured and unstructured data using natural language.
+- Natural language to SQL for direct database retrieval.
+- EDA on database tables or uploaded CSVs with plots and summary stats.
+- Automatic routing between SQL and EDA requests.
+- Two UIs: Streamlit chat UI and a lightweight static web client.
 
-Unlike traditional NL2SQL systems that only convert a query into SQL, Querify can:
-
-* Translate natural language into SQL
-* Perform full exploratory data analysis (EDA)
-* Generate and execute Python code safely inside a sandbox
-* Support both SQL and NoSQL data sources
-* Work with multilingual queries
-* Analyze customer sentiment from reviews and textual data
-* Produce human-readable insights, charts, and summaries
-
-The system is designed primarily for small and medium businesses that need powerful analytics without requiring technical knowledge of SQL, Python, or data science.
-
----
-
-# Features
-
-* Natural Language → SQL translation
-* Automatic routing between SQL and EDA tasks
-* Iterative multi-pass EDA using LLM feedback loops
-* Secure sandboxed Python execution
-* Support for MySQL and MongoDB
-* Multilingual query support
-* Sentiment analysis for customer reviews and feedback
-* Human-readable explanation generation
-* Graph and visualization generation
-* Role-Based Access Control (RBAC) support
-
----
-
-# Architecture
+## Architecture (Current)
 
 ```text
 User
-  ↓
-Streamlit Frontend (ui.py)
-  ↓
-FastAPI Backend (api.py)
-  ↓
-Route Agent (LLM)
-  ↓
-Decision Node
- ├── SQL Agent → SQL Database
- └── EDA Agent → Python Sandbox
-  ↓
-Synthesizer LLM
-  ↓
-User Response
+  -> Streamlit UI (ui.py) or Static Web UI (frontend/)
+  -> FastAPI backend (api.py)
+  -> Route agent (LLM)
+      -> SQL agent (MySQL via SQLAlchemy)
+      -> EDA agent (pandas + matplotlib)
+  -> Response (answer + optional table + optional plot)
 ```
 
-## Components
+## Example Output
 
-### 1. Frontend
+![Sales distribution example](output/sales_distribution.png)
 
-Built using Streamlit.
+## Repository Layout
 
-Responsibilities:
+- api.py: FastAPI backend and routing endpoint.
+- ui.py: Streamlit chat UI.
+- agents/: route, SQL, and EDA agents.
+- frontend/: static UI (HTML/CSS/JS) and a small local server.
+- test-data/: sample CSVs for quick testing.
+- output/: example images and generated artifacts.
 
-* Accept user query
-* Display tables, charts, and explanations
-* Send query to backend using HTTP POST
+## Setup
 
-### 2. Backend
+### 1) Install dependencies
 
-Built using FastAPI.
-
-Responsibilities:
-
-* Receive frontend request
-* Call `route_query()`
-* Forward task to the appropriate agent
-* Return final response
-
-### 3. Route Agent
-
-The Route Agent is an LLM-based classifier that determines whether the query is:
-
-* `SQL_QUERY`
-* `EDA_TASK`
-
-Example:
-
-* "Show total sales for 2024" → SQL Query
-* "Plot monthly sales trends" → EDA Task
-
-### 4. SQL Agent
-
-The SQL Agent converts natural language into SQL.
-
-Example:
-
-```sql
-SELECT department, COUNT(*)
-FROM employees
-GROUP BY department;
+```bash
+python -m venv .venv
 ```
 
-### 5. EDA Agent
+Windows PowerShell:
 
-The EDA Agent generates Python code for:
+```bash
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-* Statistical summaries
-* Correlation analysis
-* Missing value detection
-* Outlier detection
-* Graph generation
+macOS/Linux:
 
-### 6. Python Sandbox
+```bash
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-All generated code is executed inside a restricted sandbox to prevent:
+### 2) Configure environment
 
-* File system access
-* Network access
-* Dangerous imports
-* Arbitrary shell execution
-
-### 7. Synthesizer
-
-The Synthesizer LLM converts raw outputs into a clean explanation for the user.
-
----
-
-# Iterative EDA Workflow
-
-Querify does not rely on a single-pass analysis.
-
-Instead, it repeatedly improves its analysis using a feedback loop:
-
-1. Generate an initial EDA plan and Python code
-2. Execute the code in the sandbox
-3. Capture results and errors
-4. Feed results back into the LLM
-5. Refine the analysis until convergence
+Create a .env file with the following as needed:
 
 ```text
-User Query
-   ↓
-LLM (Coder)
-   ↓
-Python Sandbox
-   ↓
-Success?
- ├── No → Error Logger → LLM Retry
- └── Yes → Result + Plot
-   ↓
-LLM Synthesizer
-   ↓
-Final Answer
+DATABASE_URL=mysql+pymysql://user:password@host:3306/dbname
+GROQ_API_KEY=your_groq_key
+FEATHERLESS_API_KEY=your_featherless_key
 ```
 
-This allows Querify to recover automatically from syntax errors, bad plots, or incomplete analyses.
+Notes:
 
----
+- DATABASE_URL is required for SQL queries and DB-backed EDA.
+- CSV analysis can be done without a database connection.
 
-# Tech Stack
+### 3) Run the backend
 
-| Layer               | Technology                             |
-| ------------------- | -------------------------------------- |
-| Frontend            | Streamlit                              |
-| Backend             | FastAPI                                |
-| LLM Integration     | OpenAI / Gemini / other compatible LLM |
-| Database            | MySQL, MongoDB                         |
-| Data Processing     | Pandas                                 |
-| Visualization       | Matplotlib, Seaborn                    |
-| Sentiment Analysis  | DistilBERT (SST-2)                     |
-| Execution Isolation | Python Sandbox                         |
+```bash
+python api.py
+```
 
----
+### 4) Run a UI
 
-# Example Queries
+Streamlit UI:
 
-### SQL Queries
+```bash
+streamlit run ui.py
+```
+
+Static web UI:
+
+```bash
+python frontend/server.py
+```
+
+## Example Queries
+
+SQL:
 
 ```text
 Show the top 5 products by revenue
 ```
 
-```text
-How many employees joined in 2024?
-```
-
-```text
-List customers from Mumbai
-```
-
-### EDA Queries
+EDA:
 
 ```text
 Plot monthly sales trend
 ```
 
-```text
-Find correlation between price and demand
-```
+CSV EDA:
 
 ```text
 Detect outliers in customer spending
 ```
 
-### Sentiment Queries
+## Notes
 
-```text
-Analyze customer review sentiment by month
-```
+- The router decides between SQL and EDA based on the question.
+- The EDA agent uses pandas and matplotlib to generate plots and summary stats.
+- CSVs are stored in memory for the current server session.
 
-```text
-Compare product sales with review sentiment
-```
+## Contributors
 
----
+- Kshayik Doshi
+- Krish Shah
+- Kartik Sunil
+- Rishi Mehta
 
-# Sample Output
-
-Querify can return:
-
-* SQL result tables
-* Charts and plots
-* Natural language summaries
-* Statistical insights
-* Sentiment distributions
-
-Example:
-
-> Sales increased by 18% between March and June. Customer sentiment also improved during the same period, suggesting a positive relationship between satisfaction and revenue.
-
----
-
-# Experimental Results
-
-From initial testing:
-
-* 84% SQL accuracy in zero-shot mode
-* 94% SQL accuracy with schema-aware prompting
-* Average EDA convergence in 3.2 iterations
-* 90% successful sandbox code execution rate
-
----
-
-# Future Work
-
-* Real-time streaming analytics
-* Retrieval-Augmented Generation (RAG)
-* Interactive dashboards
-* More advanced chart support
-* Larger benchmark evaluation
-* Enterprise deployment with advanced RBAC
-
----
-
-# Contributors
-
-* Kshayik Doshi
-* Krish Shah
-* Kartik Sunil
-* Rishi Mehta
-
----
-
-# License
+## License
 
 This project is intended for academic and research purposes.
-
-```text
-Copyright © 2025
-```

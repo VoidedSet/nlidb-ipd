@@ -1,10 +1,28 @@
 qenv
 .env
+.env.*
 
 agents/__pycache__/
 __pycache__/
 *.py[cod]
 *$py.class
+
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+*.egg-info/
+build/
+dist/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.coverage
+coverage.xml
+htmlcov/
 
 qenv/
 
@@ -25,3 +43,6 @@ tmp/
 Thumbs.db
 
 __pypackages__/
+
+# OS / editor
+Desktop.ini
